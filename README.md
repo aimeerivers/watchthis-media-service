@@ -1,69 +1,191 @@
-# express-server-template
+# WatchThis Media Service
 
-A template for a new express server project.
+Media management service for the WatchThis platform. Handles media URLs, metadata extraction, and content management.
 
-Demonstrates a simple web server with both front end and API.
+## Overview
 
-Uses NPM, Express, Pug, Tailwind CSS. Tested with node:test, node:assert and SuperTest.
+The watchthis-media-service is responsible for:
 
-## Getting started
+- Storing and managing media items (YouTube videos, articles, music, etc.)
+- Extracting metadata from media URLs
+- Providing media search and filtering capabilities
+- Validating and categorizing media content
+- Generating preview images and summaries
 
-Add a `.env` file and add some environment variables:
+This service is part of the WatchThis microservice ecosystem and integrates with:
 
-```text
-BASE_URL=http://localhost:8080
+- **watchthis-user-service**: For user authentication and authorization
+- **watchthis-sharing-service**: For sharing media between users
+- **watchthis-inbox-service**: For organizing shared content
+
+## Technology Stack
+
+- **Runtime**: Node.js with ES modules
+- **Framework**: Express.js with TypeScript
+- **Database**: MongoDB with Mongoose ODM
+- **Testing**: Node.js built-in test runner with Supertest
+- **Build System**: TypeScript compilation, TailwindCSS processing
+- **Code Quality**: ESLint, Prettier, package linting
+
+## API Endpoints
+
+### Media Management
+
+```
+POST   /api/v1/media              # Add new media
+GET    /api/v1/media/:id          # Get media details
+GET    /api/v1/media/extract      # Extract metadata from URL
+PATCH  /api/v1/media/:id          # Update media metadata
+DELETE /api/v1/media/:id          # Remove media
+GET    /api/v1/media/search       # Search media items
 ```
 
-Install npm dependencies
+### Health & Monitoring
+
+```
+GET    /health                    # Service health check
+GET    /ping                      # Simple service status
+```
+
+## Getting Started
+
+### Environment Configuration
+
+Create a `.env` file with the following variables:
+
+```bash
+# Server Configuration
+PORT=7769
+BASE_URL=http://localhost:7769
+NODE_ENV=development
+
+# Database Configuration
+MONGO_URL=mongodb://localhost:27017/watchthis-media
+
+# Service URLs
+USER_SERVICE_URL=http://localhost:8583
+HOME_SERVICE_URL=http://localhost:7279
+
+# API Keys (for metadata extraction)
+YOUTUBE_API_KEY=your_youtube_api_key_here
+```
+
+### Installation
 
 ```bash
 npm install
 ```
 
-## Build the source code
+### Development
 
 ```bash
+# Run in development mode (auto-restart on changes)
+npm run dev
+
+# Build TypeScript
 npm run build
-```
 
-## Run unit tests
-
-```bash
+# Run tests
 npm run test
+
+# Lint and format code
+npm run lint
+npm run format
 ```
 
-## Build CSS
+### Production
 
 ```bash
-npm run tailwind:css
-```
+# Build for production
+npm run build
 
-## Run the server locally
-
-```bash
+# Start production server
 npm run start
 ```
 
-Visit http://localhost:8080 in your browser
+Visit http://localhost:7769 for the service dashboard.
 
-## Run in development mode
+## Database Schema
 
-```bash
-npm run dev
+### Media Collection
+
+```javascript
+{
+  _id: ObjectId,
+  url: String,                    // Original media URL
+  platform: String,              // 'youtube', 'spotify', 'article', etc.
+  metadata: {
+    title: String,
+    description: String,
+    thumbnail: String,
+    duration: Number,             // in seconds
+    author: String,
+    publishedAt: Date,
+    tags: [String]
+  },
+  extractedAt: Date,              // When metadata was extracted
+  createdBy: ObjectId,            // User ID who added this media
+  createdAt: Date,
+  updatedAt: Date
+}
 ```
 
-This will automatically rebuild the source code and restart the server for you.
+## Supported Platforms
 
-## Format code
+### Phase 1 (Current)
 
-The project uses ESLint and Prettier to ensure consistent coding standards.
+- ✅ **YouTube**: Video metadata extraction
+- ✅ **Generic URLs**: Basic metadata extraction
+- ✅ **Direct Links**: Articles, blog posts, web content
+
+### Phase 2 (Planned)
+
+- 🔄 **Spotify**: Music and podcast metadata
+- 🔄 **Vimeo**: Video content
+- 🔄 **SoundCloud**: Audio content
+
+### Phase 3 (Future)
+
+- 📋 **Social Media**: Twitter threads, Instagram posts
+- 📋 **Streaming**: Netflix, Disney+ (where legally possible)
+- 📋 **Books**: Goodreads integration
+
+## Code Quality Standards
+
+The project maintains high code quality through:
 
 ```bash
-npm run lint
-npm run format
-npm run package:lint
+# Run all quality checks
+npm run lint          # ESLint with auto-fix
+npm run format        # Prettier formatting
+npm run package:lint  # Package.json validation
+npm run test          # Comprehensive test suite
 ```
 
-- `lint` will check for errors and fix formatting in `.ts` and `.js` files.
-- `format` will apply format rules to all possible files.
-- `package:lint` will warn of any inconsistencies in the `package.json` file.
+All code must:
+
+- Pass TypeScript strict type checking
+- Follow ESLint configuration
+- Maintain 80%+ test coverage
+- Include proper error handling
+- Use async/await patterns consistently
+
+## Architecture Integration
+
+This service follows the WatchThis microservice patterns:
+
+- **Health Checks**: Implements `/health` endpoint with dependency checking
+- **Session Forwarding**: Integrates with user service for authentication
+- **Event Publishing**: Publishes media events for other services
+- **Graceful Degradation**: Handles external service failures gracefully
+- **Environment Flexibility**: Supports development, test, and production configs
+
+## Contributing
+
+1. Follow the established TypeScript and Express patterns
+2. Write comprehensive tests for new features
+3. Update this README for significant changes
+4. Ensure all quality checks pass before committing
+5. Follow semantic versioning for releases
+
+For detailed development guidelines, see `.copilot/rules.md` and `.copilot/workspace.md`.

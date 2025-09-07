@@ -1,22 +1,22 @@
 {
-  "name": "express-server-template",
+  "name": "watchthis-media-service",
   "version": "0.0.1",
-  "description": "A template for a new express server project",
+  "description": "Media management service for WatchThis - handles media URLs, metadata extraction, and content management",
   "keywords": [
     "express",
     "server",
     "template"
   ],
-  "homepage": "https://github.com/aimeerivers/express-server-template#readme",
+  "homepage": "https://github.com/aimeerivers/watchthis-media-service#readme",
   "bugs": {
-    "url": "https://github.com/aimeerivers/express-server-template/issues"
+    "url": "https://github.com/aimeerivers/watchthis-media-service/issues"
   },
   "license": "ISC",
   "author": "aimee rivers",
   "main": "dist/src/server.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aimeerivers/express-server-template.git"
+    "url": "git+https://github.com/aimeerivers/watchthis-media-service.git"
   },
   "type": "module",
   "scripts": {
@@ -47,7 +47,7 @@
     "@types/supertest": "6.0.3",
     "autoprefixer": "10.4.21",
     "concurrently": "9.2.0",
-    "eslint-config-plus-prettier": "4.1.15",
+    "eslint-config-plus-prettier": "4.2.0",
     "nodemon": "3.1.10",
     "postcss": "8.5.6",
     "postcss-cli": "11.0.1",
