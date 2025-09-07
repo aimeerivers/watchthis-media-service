@@ -2,21 +2,67 @@
 
 Media management service for the WatchThis platform. Handles media URLs, metadata extraction, and content management.
 
+## 🚀 Status: Phase 1 Complete!
+
+✅ **Core CRUD operations implemented**  
+✅ **MongoDB integration with full schema**  
+✅ **URL validation and normalization**  
+✅ **Platform detection (YouTube, generic)**  
+✅ **Search and filtering APIs**  
+✅ **Comprehensive test suite**
+
 ## Overview
 
 The watchthis-media-service is responsible for:
 
-- Storing and managing media items (YouTube videos, articles, music, etc.)
-- Extracting metadata from media URLs
-- Providing media search and filtering capabilities
-- Validating and categorizing media content
-- Generating preview images and summaries
+- ✅ Storing and managing media items (YouTube videos, articles, music, etc.)
+- 🚧 Extracting metadata from media URLs (Phase 2)
+- ✅ Providing media search and filtering capabilities
+- ✅ Validating and categorizing media content
+- 🚧 Generating preview images and summaries (Phase 2)
 
 This service is part of the WatchThis microservice ecosystem and integrates with:
 
 - **watchthis-user-service**: For user authentication and authorization
 - **watchthis-sharing-service**: For sharing media between users
 - **watchthis-inbox-service**: For organizing shared content
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- MongoDB running locally
+- Git
+
+### Installation
+
+```bash
+git clone <repository-url>
+cd watchthis-media-service
+npm install
+cp .env.example .env
+# Edit .env with your MongoDB connection string
+npm run dev
+```
+
+### Test the API
+
+```bash
+# Health check
+curl http://localhost:8584/health
+
+# Create a media item
+curl -X POST http://localhost:8584/api/v1/media \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}'
+
+# List media
+curl http://localhost:8584/api/v1/media
+
+# Search media
+curl "http://localhost:8584/api/v1/media/search?q=test"
+```
 
 ## Technology Stack
 
