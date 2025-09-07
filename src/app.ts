@@ -7,6 +7,7 @@ import path from "path";
 
 import packageJson from "../package.json" with { type: "json" };
 import { mountApi } from "./api.js";
+import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
 
@@ -64,5 +65,9 @@ app.get("/health", (_req, res) => {
 app.get("/ping", (_req, res) => {
   res.send(`${packageJson.name} ${packageJson.version}`);
 });
+
+// Error handling middleware (must be last)
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export { app };

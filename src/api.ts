@@ -11,6 +11,93 @@ export function mountApi(mountRoute: string, app: Express): void {
     res.json({ status: "OK", message: "API is running" });
   });
 
+  // Extract metadata without storing (for preview) - MUST be before /:id route
+  app.get(mountRoute + "/media/extract", asyncHandler(async (req: Request, res: Response) => {
+    const { url } = req.query;
+
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ error: { message: "URL parameter is required" } });
+    }
+
+    // Validate URL
+    const validation = validateUrl(url);
+    if (!validation.isValid) {
+      return res.status(400).json({ error: { message: validation.error } });
+    }
+
+    try {
+      const normalizedUrl = normalizeUrl(url);
+      const platform = detectPlatform(url);
+
+      // For now, return basic extraction info
+      // TODO: Implement actual metadata extraction
+      const extraction = {
+        url,
+        normalizedUrl,
+        platform,
+        type: 'unknown',
+        title: null,
+        description: null,
+        thumbnail: null,
+        duration: null,
+        extractionStatus: 'pending',
+        message: 'Metadata extraction not yet implemented'
+      };
+
+      res.json(extraction);
+    } catch (error) {
+      throw error;
+    }
+  }));
+
+  // Search media - MUST be before /:id route
+  app.get(mountRoute + "/media/search", asyncHandler(async (req: Request, res: Response) => {
+    const { q, platform, type } = req.query;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
+    const skip = (page - 1) * limit;
+
+    const filter: Record<string, unknown> = {};
+    
+    // Add text search if query provided
+    if (q && typeof q === 'string') {
+      filter.$text = { $search: q };
+    }
+    
+    // Add platform filter
+    if (platform) {
+      filter.platform = platform;
+    }
+    
+    // Add type filter
+    if (type) {
+      filter.type = type;
+    }
+
+    const [media, total] = await Promise.all([
+      Media.find(filter)
+        .sort(q ? { score: { $meta: "textScore" } } : { createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Media.countDocuments(filter)
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    
+    res.json({
+      media,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      },
+      query: { q, platform, type }
+    });
+  }));
+
   // Create new media item
   app.post(mountRoute + "/media", asyncHandler(async (req: Request, res: Response) => {
     const { url } = req.body;
@@ -146,95 +233,4 @@ export function mountApi(mountRoute: string, app: Express): void {
       }
     });
   }));
-
-  // Extract metadata without storing (for preview)
-  app.get(mountRoute + "/media/extract", asyncHandler(async (req: Request, res: Response) => {
-    const { url } = req.query;
-
-    if (!url || typeof url !== 'string') {
-      return res.status(400).json({ error: { message: "URL parameter is required" } });
-    }
-
-    // Validate URL
-    const validation = validateUrl(url);
-    if (!validation.isValid) {
-      return res.status(400).json({ error: { message: validation.error } });
-    }
-
-    try {
-      const normalizedUrl = normalizeUrl(url);
-      const platform = detectPlatform(url);
-
-      // For now, return basic extraction info
-      // TODO: Implement actual metadata extraction
-      const extraction = {
-        url,
-        normalizedUrl,
-        platform,
-        type: 'unknown',
-        title: null,
-        description: null,
-        thumbnail: null,
-        duration: null,
-        extractionStatus: 'pending',
-        message: 'Metadata extraction not yet implemented'
-      };
-
-      res.json(extraction);
-    } catch (error) {
-      throw error;
-    }
-  }));
-
-  // Search media
-  app.get(mountRoute + "/media/search", asyncHandler(async (req: Request, res: Response) => {
-    const { q, platform, type } = req.query;
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
-    const skip = (page - 1) * limit;
-
-    const filter: Record<string, unknown> = {};
-    
-    // Add text search if query provided
-    if (q && typeof q === 'string') {
-      filter.$text = { $search: q };
-    }
-    
-    // Add platform filter
-    if (platform) {
-      filter.platform = platform;
-    }
-    
-    // Add type filter
-    if (type) {
-      filter.type = type;
-    }
-
-    const [media, total] = await Promise.all([
-      Media.find(filter)
-        .sort(q ? { score: { $meta: "textScore" } } : { createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Media.countDocuments(filter)
-    ]);
-
-    const totalPages = Math.ceil(total / limit);
-    
-    res.json({
-      media,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1
-      },
-      query: { q, platform, type }
-    });
-  }));
-
-  // Error handling middleware (must be last)
-  app.use(notFoundHandler);
-  app.use(errorHandler);
 }

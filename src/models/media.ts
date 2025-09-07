@@ -89,7 +89,6 @@ MediaSchema.set("toJSON", {
 });
 
 // Indexes for performance
-MediaSchema.index({ normalizedUrl: 1 });
 MediaSchema.index({ platform: 1 });
 MediaSchema.index({ type: 1 });
 MediaSchema.index({ extractionStatus: 1 });
