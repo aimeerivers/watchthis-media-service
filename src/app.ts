@@ -54,11 +54,11 @@ app.get("/", (_req, res) => {
 });
 
 app.get("/health", (_req, res) => {
-  res.json({ 
-    status: "healthy", 
-    service: packageJson.name, 
+  res.json({
+    status: "healthy",
+    service: packageJson.name,
     version: packageJson.version,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 

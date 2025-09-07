@@ -59,6 +59,7 @@ The `watchthis-media-service` is the first core service in the WatchThis MVP imp
 ## Implementation Notes
 
 ### Key Files Created/Modified:
+
 - `src/models/media.ts` - Media MongoDB schema with full validation
 - `src/utils/urlProcessor.ts` - URL validation, normalization, and platform detection
 - `src/utils/asyncHandler.ts` - Async error handling wrapper
@@ -68,6 +69,7 @@ The `watchthis-media-service` is the first core service in the WatchThis MVP imp
 - `test/media.test.ts` - Comprehensive test suite
 
 ### Database Schema Features:
+
 - URL normalization to prevent duplicates
 - Platform detection (YouTube vs generic)
 - Content type classification (video, article, audio, unknown)
@@ -76,6 +78,7 @@ The `watchthis-media-service` is the first core service in the WatchThis MVP imp
 - Performance indexes on common query fields
 
 ### API Endpoints Implemented:
+
 - `POST /api/v1/media` - Create media with URL validation
 - `GET /api/v1/media/:id` - Get single media item
 - `PATCH /api/v1/media/:id` - Update metadata (prevents URL changes)
@@ -165,18 +168,22 @@ The `watchthis-media-service` is the first core service in the WatchThis MVP imp
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB running locally or connection string
 - npm or yarn
 
 ### Installation
+
 ```bash
 cd watchthis-media-service
 npm install
 ```
 
 ### Environment Variables
+
 Create a `.env` file:
+
 ```env
 MONGO_URL=mongodb://localhost:27017/media-service
 NODE_ENV=development
@@ -184,6 +191,7 @@ PORT=8584
 ```
 
 ### Development
+
 ```bash
 npm run dev        # Start with hot reloading
 npm run build      # Build TypeScript
@@ -194,6 +202,7 @@ npm run lint       # Check code quality
 ### Testing the API
 
 #### Create a media item:
+
 ```bash
 curl -X POST http://localhost:8584/api/v1/media \
   -H "Content-Type: application/json" \
@@ -201,11 +210,13 @@ curl -X POST http://localhost:8584/api/v1/media \
 ```
 
 #### List media:
+
 ```bash
 curl http://localhost:8584/api/v1/media
 ```
 
 #### Search media:
+
 ```bash
 curl "http://localhost:8584/api/v1/media/search?q=test&platform=youtube"
 ```

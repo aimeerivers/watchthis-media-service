@@ -9,7 +9,7 @@ Media management service for the WatchThis platform. Handles media URLs, metadat
 ✅ **URL validation and normalization**  
 ✅ **Platform detection (YouTube, generic)**  
 ✅ **Search and filtering APIs**  
-✅ **Comprehensive test suite**  
+✅ **Comprehensive test suite**
 
 ## Overview
 
@@ -24,17 +24,19 @@ The watchthis-media-service is responsible for:
 This service is part of the WatchThis microservice ecosystem and integrates with:
 
 - **watchthis-user-service**: For user authentication and authorization
-- **watchthis-sharing-service**: For sharing media between users  
+- **watchthis-sharing-service**: For sharing media between users
 - **watchthis-inbox-service**: For organizing shared content
 
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB running locally
 - Git
 
 ### Installation
+
 ```bash
 git clone <repository-url>
 cd watchthis-media-service
@@ -45,6 +47,7 @@ npm run dev
 ```
 
 ### Test the API
+
 ```bash
 # Health check
 curl http://localhost:8584/health
