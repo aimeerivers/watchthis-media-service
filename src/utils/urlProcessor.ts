@@ -101,6 +101,16 @@ export function validateUrl(url: string): { isValid: boolean; error?: string } {
       return { isValid: false, error: "Invalid hostname" };
     }
 
+    // Reject hostnames that start or end with dots
+    if (urlObj.hostname.startsWith(".") || urlObj.hostname.endsWith(".")) {
+      return { isValid: false, error: "Invalid hostname format" };
+    }
+
+    // Reject hostnames that don't contain at least one dot (basic domain validation)
+    if (!urlObj.hostname.includes(".")) {
+      return { isValid: false, error: "Hostname must be a valid domain" };
+    }
+
     return { isValid: true };
   } catch (error) {
     return { isValid: false, error: "Invalid URL format" };
