@@ -17,11 +17,11 @@ describe("Media Service App", () => {
     // Ensure mongoose is connected before starting tests
     if (mongoose.connection.readyState !== 1) {
       await new Promise((resolve) => {
-        mongoose.connection.once('open', resolve);
+        mongoose.connection.once("open", resolve);
         if (mongoose.connection.readyState === 1) resolve(undefined);
       });
     }
-    
+
     server = app.listen(port);
     // Clear test database
     await Media.deleteMany({});
@@ -31,7 +31,7 @@ describe("Media Service App", () => {
     try {
       // Clean up test data
       await Media.deleteMany({});
-      
+
       // Close server properly
       await new Promise<void>((resolve, reject) => {
         server.close((err) => {
@@ -39,11 +39,11 @@ describe("Media Service App", () => {
           else resolve();
         });
       });
-      
+
       // Close mongoose connection last
       await mongoose.connection.close();
     } catch (error) {
-      console.error('Error during cleanup:', error);
+      console.error("Error during cleanup:", error);
       throw error;
     }
   });
