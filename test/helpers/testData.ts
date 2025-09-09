@@ -8,8 +8,11 @@ export function generateValidUrl(): string {
 
   const domain = domains[Math.floor(Math.random() * domains.length)];
   const path = paths[Math.floor(Math.random() * paths.length)];
+  const uniqueId = Math.random().toString(36).substring(2, 15);
 
-  return `https://${domain}${path}`;
+  // Ensure proper path construction
+  const basePath = path === "" ? "" : path;
+  return `https://${domain}${basePath}/test-${uniqueId}`;
 }
 
 export function generateYouTubeUrl(): string {

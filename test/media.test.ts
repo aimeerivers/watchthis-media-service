@@ -14,15 +14,38 @@ let server: Server;
 
 describe("Media Service App", () => {
   before(async () => {
+    // Ensure mongoose is connected before starting tests
+    if (mongoose.connection.readyState !== 1) {
+      await new Promise((resolve) => {
+        mongoose.connection.once("open", resolve);
+        if (mongoose.connection.readyState === 1) resolve(undefined);
+      });
+    }
+
     server = app.listen(port);
     // Clear test database
     await Media.deleteMany({});
   });
 
   after(async () => {
-    await Media.deleteMany({});
-    await mongoose.connection.close();
-    server.close();
+    try {
+      // Clean up test data
+      await Media.deleteMany({});
+
+      // Close server properly
+      await new Promise<void>((resolve, reject) => {
+        server.close((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      // Close mongoose connection last
+      await mongoose.connection.close();
+    } catch (error) {
+      console.error("Error during cleanup:", error);
+      throw error;
+    }
   });
 
   describe("Health Endpoints", () => {
