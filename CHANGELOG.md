@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.1](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.0...v1.0.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* Validate media URLs more carefully ([#14](https://github.com/aimeerivers/watchthis-media-service/issues/14)) ([bd24840](https://github.com/aimeerivers/watchthis-media-service/commit/bd2484097fed51d3b982aeedc57bbebe4a03d6f8))
+
+
+### Chores
+
+* update caniuse-lite to version 1.0.30001741 ([#8](https://github.com/aimeerivers/watchthis-media-service/issues/8)) ([c394908](https://github.com/aimeerivers/watchthis-media-service/commit/c394908bcca522c2472f3579c1b6db64792fcf1d))
+
 ## 1.0.0 (2025-09-07)
 
 
