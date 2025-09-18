@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.2...v1.0.3) (2025-09-18)
+
+
+### Chores
+
+* Update dependencies ([#19](https://github.com/aimeerivers/watchthis-media-service/issues/19)) ([e3d0cff](https://github.com/aimeerivers/watchthis-media-service/commit/e3d0cff152112b474117673035ddc29db99bb84b))
+
 ## [1.0.2](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.1...v1.0.2) (2025-09-18)
 
 
