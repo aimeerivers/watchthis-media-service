@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.1...v1.0.2) (2025-09-18)
+
+
+### Continuous Integration
+
+* Update Release Please to v4 ([#17](https://github.com/aimeerivers/watchthis-media-service/issues/17)) ([040f989](https://github.com/aimeerivers/watchthis-media-service/commit/040f9899048d7c97fca34555498749ff8ac61882))
+
 ## [1.0.1](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.0...v1.0.1) (2025-09-09)
 
 
