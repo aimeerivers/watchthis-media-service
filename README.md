@@ -50,18 +50,18 @@ npm run dev
 
 ```bash
 # Health check
-curl http://localhost:8584/health
+curl http://localhost:7769/health
 
 # Create a media item
-curl -X POST http://localhost:8584/api/v1/media \
+curl -X POST http://localhost:7769/api/v1/media \
   -H "Content-Type: application/json" \
   -d '{"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}'
 
 # List media
-curl http://localhost:8584/api/v1/media
+curl http://localhost:7769/api/v1/media
 
 # Search media
-curl "http://localhost:8584/api/v1/media/search?q=test"
+curl "http://localhost:7769/api/v1/media/search?q=test"
 ```
 
 ## Technology Stack
