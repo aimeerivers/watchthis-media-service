@@ -94,6 +94,24 @@ describe("Media Service App", () => {
       assert.ok(res.body.error);
     });
 
+    it("should return existing media when URL already exists", async () => {
+      const url = generateValidUrl();
+
+      // First request creates the media item
+      const firstRes = await request(app).post("/api/v1/media").send({ url }).expect(201);
+
+      // Second request with same URL should return the existing item with 200 OK
+      const secondRes = await request(app).post("/api/v1/media").send({ url }).expect(200);
+
+      // Should return the same media item (same ID)
+      assert.equal(secondRes.body.id, firstRes.body.id);
+      assert.equal(secondRes.body.url, url);
+      assert.equal(secondRes.body.platform, firstRes.body.platform);
+
+      // Should not have any error fields
+      assert.equal(secondRes.body.error, undefined);
+    });
+
     it("should get media by ID", async () => {
       const url = generateValidUrl();
       const createRes = await request(app).post("/api/v1/media").send({ url }).expect(201);
