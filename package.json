@@ -1,6 +1,6 @@
 {
   "name": "watchthis-media-service",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Media management service for WatchThis - handles media URLs, metadata extraction, and content management",
   "keywords": [
     "express",

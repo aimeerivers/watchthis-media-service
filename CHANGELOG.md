@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.5...v1.0.6) (2025-10-10)
+
+
+### Bug Fixes
+
+* Adding the same media twice should no longer give a 409 Conflict ([#25](https://github.com/aimeerivers/watchthis-media-service/issues/25)) ([dc713c1](https://github.com/aimeerivers/watchthis-media-service/commit/dc713c10a656ac21c226709a18c0e6bd001fd028))
+
 ## [1.0.5](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.4...v1.0.5) (2025-10-09)
 
 
