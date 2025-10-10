@@ -127,10 +127,7 @@ export function mountApi(mountRoute: string, app: Express): void {
         // Check if media already exists
         const existingMedia = await Media.findOne({ normalizedUrl });
         if (existingMedia) {
-          return res.status(409).json({
-            error: { message: "Media URL already exists" },
-            existing: existingMedia,
-          });
+          return res.status(200).json(existingMedia);
         }
 
         const media = new Media({
