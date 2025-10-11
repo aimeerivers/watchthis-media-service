@@ -1,6 +1,7 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import { Express } from "express";
 
+import { type RequestWithUser, requireAuth } from "./middleware/auth.js";
 import { Media } from "./models/media.js";
 import { asyncHandler } from "./utils/asyncHandler.js";
 import { detectPlatform, normalizeUrl, validateUrl } from "./utils/urlProcessor.js";
@@ -14,7 +15,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // Extract metadata without storing (for preview) - MUST be before /:id route
   app.get(
     mountRoute + "/media/extract",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const { url } = req.query;
 
       if (!url || typeof url !== "string") {
@@ -56,7 +58,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // Search media - MUST be before /:id route
   app.get(
     mountRoute + "/media/search",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const { q, platform, type } = req.query;
       const page = parseInt(req.query.page as string) || 1;
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
@@ -107,7 +110,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // Create new media item
   app.post(
     mountRoute + "/media",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const { url } = req.body;
 
       if (!url) {
@@ -149,7 +153,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // Get media by ID
   app.get(
     mountRoute + "/media/:id",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const { id } = req.params;
 
       const media = await Media.findById(id);
@@ -164,7 +169,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // Update media metadata
   app.patch(
     mountRoute + "/media/:id",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const { id } = req.params;
       const updates = req.body;
 
@@ -191,7 +197,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // Delete media item
   app.delete(
     mountRoute + "/media/:id",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const { id } = req.params;
 
       const media = await Media.findByIdAndDelete(id);
@@ -206,7 +213,8 @@ export function mountApi(mountRoute: string, app: Express): void {
   // List media with pagination
   app.get(
     mountRoute + "/media",
-    asyncHandler(async (req: Request, res: Response) => {
+    requireAuth,
+    asyncHandler(async (req: RequestWithUser, res: Response) => {
       const page = parseInt(req.query.page as string) || 1;
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 100); // Max 100 items
       const skip = (page - 1) * limit;
