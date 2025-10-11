@@ -7,6 +7,7 @@ import path from "path";
 
 import packageJson from "../package.json" with { type: "json" };
 import { mountApi } from "./api.js";
+import { authenticateJWT } from "./middleware/auth.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -42,6 +43,9 @@ app.use(
 
 app.use(express.json()); // For parsing JSON bodies
 app.use(express.urlencoded({ extended: true }));
+
+// JWT authentication middleware (optional - adds user to req.user if valid token present)
+app.use(authenticateJWT);
 
 app.set("view engine", "pug");
 app.set("views", path.join(appRootPath.path, "views"));
