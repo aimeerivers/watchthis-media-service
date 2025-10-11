@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.6...v2.0.0) (2025-10-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* Media Service API endpoints now require JWT authentication
+
+### Features
+
+* Add authentication middleware and require authentication to the API ([#27](https://github.com/aimeerivers/watchthis-media-service/issues/27)) ([84d0a8d](https://github.com/aimeerivers/watchthis-media-service/commit/84d0a8ddd3c171a4addc1580a349b0d3b1c98410))
+
 ## [1.0.6](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.5...v1.0.6) (2025-10-10)
 
 
