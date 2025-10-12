@@ -246,49 +246,6 @@ describe("Media Service App", () => {
       assert.equal(res.body.message, "API is running");
     });
 
-    it("should fail to update media when not authenticated", async () => {
-      // First create a media item with auth
-      const auth = authenticateAs(testUsers.user1);
-      const url = generateValidUrl();
-      const createRes = await request(app)
-        .post("/api/v1/media")
-        .set("Authorization", auth.authHeader)
-        .send({ url })
-        .expect(201);
-
-      // Clear mocks to simulate unauthenticated request
-      clearUserServiceMocks();
-
-      // Try to update the media without auth
-      const res = await request(app)
-        .patch(`/api/v1/media/${createRes.body.id}`)
-        .send({ title: "Updated title" })
-        .expect(401);
-
-      assert.equal(res.body.success, false);
-      assert.equal(res.body.error.code, "AUTHENTICATION_REQUIRED");
-    });
-
-    it("should fail to delete media when not authenticated", async () => {
-      // First create a media item with auth
-      const auth = authenticateAs(testUsers.user1);
-      const url = generateValidUrl();
-      const createRes = await request(app)
-        .post("/api/v1/media")
-        .set("Authorization", auth.authHeader)
-        .send({ url })
-        .expect(201);
-
-      // Clear mocks to simulate unauthenticated request
-      clearUserServiceMocks();
-
-      // Try to delete the media without auth
-      const res = await request(app).delete(`/api/v1/media/${createRes.body.id}`).expect(401);
-
-      assert.equal(res.body.success, false);
-      assert.equal(res.body.error.code, "AUTHENTICATION_REQUIRED");
-    });
-
     it("should handle invalid JWT token gracefully", async () => {
       const url = generateValidUrl();
       const res = await request(app)

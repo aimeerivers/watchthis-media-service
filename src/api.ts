@@ -166,50 +166,6 @@ export function mountApi(mountRoute: string, app: Express): void {
     })
   );
 
-  // Update media metadata
-  app.patch(
-    mountRoute + "/media/:id",
-    requireAuth,
-    asyncHandler(async (req: RequestWithUser, res: Response) => {
-      const { id } = req.params;
-      const updates = req.body;
-
-      // Remove fields that shouldn't be updated directly
-      delete updates.url;
-      delete updates.normalizedUrl;
-      delete updates._id;
-      delete updates.createdAt;
-      delete updates.updatedAt;
-
-      const media = await Media.findByIdAndUpdate(id, updates, {
-        new: true,
-        runValidators: true,
-      });
-
-      if (!media) {
-        return res.status(404).json({ error: { message: "Media not found" } });
-      }
-
-      res.json(media);
-    })
-  );
-
-  // Delete media item
-  app.delete(
-    mountRoute + "/media/:id",
-    requireAuth,
-    asyncHandler(async (req: RequestWithUser, res: Response) => {
-      const { id } = req.params;
-
-      const media = await Media.findByIdAndDelete(id);
-      if (!media) {
-        return res.status(404).json({ error: { message: "Media not found" } });
-      }
-
-      res.status(204).send();
-    })
-  );
-
   // List media with pagination
   app.get(
     mountRoute + "/media",

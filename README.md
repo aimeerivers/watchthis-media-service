@@ -15,11 +15,13 @@ Media management service for the WatchThis platform. Handles media URLs, metadat
 
 The watchthis-media-service is responsible for:
 
-- ✅ Storing and managing media items (YouTube videos, articles, music, etc.)
-- 🚧 Extracting metadata from media URLs (Phase 2)
+- ✅ Storing media URLs in a centralized repository (YouTube videos, articles, music, etc.)
+- 🚧 Automatically extracting metadata from media URLs via queue processing (Phase 2)
 - ✅ Providing media search and filtering capabilities
 - ✅ Validating and categorizing media content
 - 🚧 Generating preview images and summaries (Phase 2)
+
+**Note**: This service acts as a **read-only repository** for known media links. Once added, media items cannot be edited or deleted through the API, ensuring data integrity and consistency.
 
 This service is part of the WatchThis microservice ecosystem and integrates with:
 
@@ -52,16 +54,19 @@ npm run dev
 # Health check
 curl http://localhost:7769/health
 
-# Create a media item
+# Add a media item to the repository
 curl -X POST http://localhost:7769/api/v1/media \
   -H "Content-Type: application/json" \
   -d '{"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}'
 
-# List media
+# List media repository
 curl http://localhost:7769/api/v1/media
 
-# Search media
+# Search media repository
 curl "http://localhost:7769/api/v1/media/search?q=test"
+
+# Preview metadata extraction (without storing)
+curl "http://localhost:7769/api/v1/media/extract?url=https://example.com"
 ```
 
 ## Technology Stack
@@ -78,12 +83,11 @@ curl "http://localhost:7769/api/v1/media/search?q=test"
 ### Media Management
 
 ```
-POST   /api/v1/media              # Add new media
+POST   /api/v1/media              # Add new media to repository
 GET    /api/v1/media/:id          # Get media details
-GET    /api/v1/media/extract      # Extract metadata from URL
-PATCH  /api/v1/media/:id          # Update media metadata
-DELETE /api/v1/media/:id          # Remove media
-GET    /api/v1/media/search       # Search media items
+GET    /api/v1/media/extract      # Preview metadata extraction (read-only)
+GET    /api/v1/media              # List media items with pagination
+GET    /api/v1/media/search       # Search media repository
 ```
 
 ### Health & Monitoring
@@ -169,10 +173,11 @@ Visit http://localhost:7769 for the service dashboard.
     publishedAt: Date,
     tags: [String]
   },
+  extractionStatus: String,       // 'pending', 'completed', 'failed'
+  extractionError: String,        // Error message if extraction fails
   extractedAt: Date,              // When metadata was extracted
-  createdBy: ObjectId,            // User ID who added this media
-  createdAt: Date,
-  updatedAt: Date
+  createdAt: Date,                // When item was added to repository
+  updatedAt: Date                 // Last metadata update (automated only)
 }
 ```
 
