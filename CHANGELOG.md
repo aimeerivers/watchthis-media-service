@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/aimeerivers/watchthis-media-service/compare/v2.0.0...v3.0.0) (2025-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* Edit and delete functionality has been removed from Media Service
+
+### Features
+
+* Remove edit and delete capabilities from Media Service ([#30](https://github.com/aimeerivers/watchthis-media-service/issues/30)) ([b5b48e7](https://github.com/aimeerivers/watchthis-media-service/commit/b5b48e78e70e59c70b8bc66c00ff9d6f5ffc4bed))
+
 ## [2.0.0](https://github.com/aimeerivers/watchthis-media-service/compare/v1.0.6...v2.0.0) (2025-10-11)
 
 
