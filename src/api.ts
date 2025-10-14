@@ -162,15 +162,29 @@ export function mountApi(mountRoute: string, app: Express): void {
           return res.status(200).json(existingMedia);
         }
 
-        const media = await Media.create({
-          url,
-          normalizedUrl,
-          platform,
-          type: "unknown", // Will be determined during extraction
-          extractionStatus: "pending",
-        });
+        // Try to create new media, handle unique constraint violation
+        try {
+          const media = await Media.create({
+            url,
+            normalizedUrl,
+            platform,
+            type: "unknown", // Will be determined during extraction
+            extractionStatus: "pending",
+          });
 
-        res.status(201).json(media);
+          res.status(201).json(media);
+        } catch (createError: any) {
+          // Handle Prisma unique constraint violation (P2002)
+          if (createError.code === 'P2002' && createError.meta?.target?.includes('normalized_url')) {
+            // Race condition: media was created between our check and create attempt
+            // Fetch and return the existing media
+            const existingMedia = await Media.findOne({ normalizedUrl });
+            if (existingMedia) {
+              return res.status(200).json(existingMedia);
+            }
+          }
+          throw createError;
+        }
       } catch (error) {
         throw error;
       }
