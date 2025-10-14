@@ -1,6 +1,7 @@
 import type { Response } from "express";
 import { Express } from "express";
 
+import { prisma } from "./app.js";
 import { type RequestWithUser, requireAuth } from "./middleware/auth.js";
 import { Media } from "./models/media.js";
 import { asyncHandler } from "./utils/asyncHandler.js";
@@ -65,30 +66,57 @@ export function mountApi(mountRoute: string, app: Express): void {
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
       const skip = (page - 1) * limit;
 
-      const filter: Record<string, unknown> = {};
-
-      // Add text search if query provided
-      if (q && typeof q === "string") {
-        filter.$text = { $search: q };
-      }
+      const filters: Record<string, unknown> = {};
 
       // Add platform filter
       if (platform) {
-        filter.platform = platform;
+        filters.platform = platform;
       }
 
       // Add type filter
       if (type) {
-        filter.type = type;
+        filters.type = type;
       }
 
-      const [media, total] = await Promise.all([
-        Media.find(filter)
-          .sort(q ? { score: { $meta: "textScore" } } : { createdAt: -1 })
-          .skip(skip)
-          .limit(limit),
-        Media.countDocuments(filter),
-      ]);
+      let media;
+      let total;
+
+      if (q && typeof q === "string") {
+        // Use text search method for queries
+        [media, total] = await Promise.all([
+          Media.search(q, filters, { skip, limit }),
+          prisma.media.count({
+            where: {
+              ...filters,
+              OR: [
+                {
+                  title: {
+                    contains: q,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  description: {
+                    contains: q,
+                    mode: "insensitive",
+                  },
+                },
+              ],
+            },
+          }),
+        ]);
+      } else {
+        // Regular filtering without search
+        [media, total] = await Promise.all([
+          prisma.media.findMany({
+            where: filters,
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit,
+          }),
+          Media.countDocuments(filters),
+        ]);
+      }
 
       const totalPages = Math.ceil(total / limit);
 
@@ -134,7 +162,7 @@ export function mountApi(mountRoute: string, app: Express): void {
           return res.status(200).json(existingMedia);
         }
 
-        const media = new Media({
+        const media = await Media.create({
           url,
           normalizedUrl,
           platform,
@@ -142,7 +170,6 @@ export function mountApi(mountRoute: string, app: Express): void {
           extractionStatus: "pending",
         });
 
-        await media.save();
         res.status(201).json(media);
       } catch (error) {
         throw error;
@@ -193,7 +220,12 @@ export function mountApi(mountRoute: string, app: Express): void {
       }
 
       const [media, total] = await Promise.all([
-        Media.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+        prisma.media.findMany({
+          where: filter,
+          orderBy: { createdAt: "desc" },
+          skip,
+          take: limit,
+        }),
         Media.countDocuments(filter),
       ]);
 

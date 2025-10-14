@@ -2,10 +2,9 @@ import assert from "node:assert";
 import type { Server } from "node:http";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import mongoose from "mongoose";
 import request from "supertest";
 
-import { app } from "../src/app.js";
+import { app, prisma } from "../src/app.js";
 import { Media } from "../src/models/media.js";
 import { authenticateAs, clearUserServiceMocks, testUsers } from "./helpers/auth.js";
 import { generateInvalidUrl, generateValidUrl, generateYouTubeUrl } from "./helpers/testData.js";
@@ -15,22 +14,19 @@ let server: Server;
 
 describe("Media Service App", () => {
   before(async () => {
-    // Ensure mongoose is connected before starting tests
-    if (mongoose.connection.readyState !== 1) {
-      await new Promise((resolve) => {
-        mongoose.connection.once("open", resolve);
-        if (mongoose.connection.readyState === 1) resolve(undefined);
-      });
-    }
+    // Ensure Prisma is connected before starting tests
+    await prisma.$connect();
 
     server = app.listen(port);
     // Clear test database
     await Media.deleteMany({});
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // Clear all HTTP mocks before each test
     clearUserServiceMocks();
+    // Clear test data before each test
+    await Media.deleteMany({});
   });
 
   after(async () => {
@@ -49,8 +45,8 @@ describe("Media Service App", () => {
         });
       });
 
-      // Close mongoose connection last
-      await mongoose.connection.close();
+      // Disconnect from Prisma
+      await prisma.$disconnect();
     } catch (error) {
       console.error("Error during cleanup:", error);
       throw error;
