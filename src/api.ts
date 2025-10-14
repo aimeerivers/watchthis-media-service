@@ -175,7 +175,7 @@ export function mountApi(mountRoute: string, app: Express): void {
           res.status(201).json(media);
         } catch (createError: any) {
           // Handle Prisma unique constraint violation (P2002)
-          if (createError.code === 'P2002' && createError.meta?.target?.includes('normalized_url')) {
+          if (createError.code === "P2002" && createError.meta?.target?.includes("normalized_url")) {
             // Race condition: media was created between our check and create attempt
             // Fetch and return the existing media
             const existingMedia = await Media.findOne({ normalizedUrl });
