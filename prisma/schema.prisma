@@ -1,0 +1,35 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] // For Alpine Linux
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Media {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url              String
+  normalizedUrl    String   @unique @map("normalized_url")
+  platform         String   @default("generic")
+  type             String   @default("unknown")
+  title            String?
+  description      String?
+  thumbnail        String?
+  duration         Int?
+  extractionStatus String   @default("pending") @map("extraction_status")
+  extractionError  String?  @map("extraction_error")
+  metadata         Json     @default("{}") @db.Json
+  tags             String[] @default([])
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("media")
+  @@index([platform])
+  @@index([type])
+  @@index([extractionStatus])
+  @@index([createdAt])
+  @@index([title])
+  @@index([description])
+}

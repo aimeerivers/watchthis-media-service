@@ -1,105 +1,128 @@
-import type { Document, ObjectId } from "mongoose";
-import mongoose from "mongoose";
+import { type Media as PrismaMedia, type Prisma } from "@prisma/client";
 
-export interface IMedia extends Document {
+import { prisma } from "../app.js";
+
+export interface IMedia {
   id: string;
   url: string;
   normalizedUrl: string;
   platform: string;
   type: string;
-  title?: string;
-  description?: string;
-  thumbnail?: string;
-  duration?: number;
+  title?: string | null;
+  description?: string | null;
+  thumbnail?: string | null;
+  duration?: number | null;
   extractionStatus: "pending" | "completed" | "failed";
-  extractionError?: string;
+  extractionError?: string | null;
   metadata: Record<string, unknown>;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-const MediaSchema = new mongoose.Schema<IMedia>(
-  {
-    url: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    normalizedUrl: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-    platform: {
-      type: String,
-      required: true,
-      enum: ["youtube", "generic"],
-      default: "generic",
-    },
-    type: {
-      type: String,
-      required: true,
-      enum: ["video", "article", "audio", "unknown"],
-      default: "unknown",
-    },
-    title: {
-      type: String,
-      trim: true,
-    },
-    description: {
-      type: String,
-      trim: true,
-    },
-    thumbnail: {
-      type: String,
-      trim: true,
-    },
-    duration: {
-      type: Number,
-      min: 0,
-    },
-    extractionStatus: {
-      type: String,
-      enum: ["pending", "completed", "failed"],
-      default: "pending",
-    },
-    extractionError: {
-      type: String,
-      trim: true,
-    },
-    metadata: {
-      type: mongoose.Schema.Types.Mixed,
-      default: {},
-    },
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-  },
-  {
-    timestamps: true,
+export class Media {
+  static async findById(id: string): Promise<PrismaMedia | null> {
+    return await prisma.media.findUnique({
+      where: { id },
+    });
   }
-);
 
-MediaSchema.virtual("id").get(function () {
-  return this._id as ObjectId;
-});
+  static async findOne(where: Prisma.MediaWhereInput): Promise<PrismaMedia | null> {
+    return await prisma.media.findFirst({
+      where,
+    });
+  }
 
-MediaSchema.set("toJSON", {
-  virtuals: true,
-});
+  static async find(where?: Prisma.MediaWhereInput): Promise<PrismaMedia[]> {
+    return await prisma.media.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+  }
 
-// Indexes for performance
-MediaSchema.index({ platform: 1 });
-MediaSchema.index({ type: 1 });
-MediaSchema.index({ extractionStatus: 1 });
-MediaSchema.index({ createdAt: -1 });
-MediaSchema.index({ title: "text", description: "text" }); // Full-text search
+  static async create(data: Prisma.MediaCreateInput): Promise<PrismaMedia> {
+    return await prisma.media.create({
+      data,
+    });
+  }
 
-const Media = mongoose.model("Media", MediaSchema);
+  static async findByIdAndDelete(id: string): Promise<PrismaMedia | null> {
+    try {
+      return await prisma.media.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof Error && "code" in error && error.code === "P2025") {
+        return null; // Record not found
+      }
+      throw error;
+    }
+  }
 
-export { Media };
+  static async deleteMany(where?: Prisma.MediaWhereInput): Promise<{ count: number }> {
+    return await prisma.media.deleteMany({
+      where,
+    });
+  }
+
+  static async countDocuments(where?: Prisma.MediaWhereInput): Promise<number> {
+    return await prisma.media.count({
+      where,
+    });
+  }
+
+  static async updateById(id: string, data: Prisma.MediaUpdateInput): Promise<PrismaMedia | null> {
+    try {
+      return await prisma.media.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      if (error instanceof Error && "code" in error && error.code === "P2025") {
+        return null; // Record not found
+      }
+      throw error;
+    }
+  }
+
+  // Method to search media with text search (title and description)
+  static async search(
+    query: string,
+    filters?: {
+      platform?: string;
+      type?: string;
+      extractionStatus?: string;
+    },
+    pagination?: {
+      skip: number;
+      limit: number;
+    }
+  ): Promise<PrismaMedia[]> {
+    const where: Prisma.MediaWhereInput = {
+      ...filters,
+      OR: [
+        {
+          title: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: query,
+            mode: "insensitive",
+          },
+        },
+      ],
+    };
+
+    return await prisma.media.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      ...(pagination && {
+        skip: pagination.skip,
+        take: pagination.limit,
+      }),
+    });
+  }
+}

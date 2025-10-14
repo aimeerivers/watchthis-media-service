@@ -5,7 +5,7 @@ Media management service for the WatchThis platform. Handles media URLs, metadat
 ## 🚀 Status: Phase 1 Complete!
 
 ✅ **Core CRUD operations implemented**  
-✅ **MongoDB integration with full schema**  
+✅ **PostgreSQL integration with full schema**  
 ✅ **URL validation and normalization**  
 ✅ **Platform detection (YouTube, generic)**  
 ✅ **Search and filtering APIs**  
@@ -33,9 +33,49 @@ This service is part of the WatchThis microservice ecosystem and integrates with
 
 ### Prerequisites
 
-- Node.js 18+
-- MongoDB running locally
+- Node.js 22+
+- PostgreSQL 16+ running locally
 - Git
+
+### PostgreSQL Database Setup
+
+1. **Install PostgreSQL** (if not already installed):
+
+   ```bash
+   # macOS with Homebrew
+   brew install postgresql
+   brew services start postgresql
+
+   # Ubuntu/Debian
+   sudo apt update
+   sudo apt install postgresql postgresql-contrib
+   sudo systemctl start postgresql
+
+   # Windows
+   # Download from https://www.postgresql.org/download/windows/
+   ```
+
+2. **Create database and user**:
+
+   ```bash
+   # Connect to PostgreSQL as superuser
+   psql -U postgres
+
+   # Create user and databases
+   CREATE USER watchthis WITH PASSWORD 'watchthis_dev';
+   CREATE DATABASE watchthis_media OWNER watchthis;
+   CREATE DATABASE watchthis_media_test OWNER watchthis;
+   GRANT ALL PRIVILEGES ON DATABASE watchthis_media TO watchthis;
+   GRANT ALL PRIVILEGES ON DATABASE watchthis_media_test TO watchthis;
+   \q
+   ```
+
+3. **Verify connection**:
+   ```bash
+   psql -U watchthis -d watchthis_media -h localhost
+   # Enter password: watchthis_dev
+   # Should connect successfully, then type \q to quit
+   ```
 
 ### Installation
 
@@ -44,7 +84,8 @@ git clone <repository-url>
 cd watchthis-media-service
 npm install
 cp .env.example .env
-# Edit .env with your MongoDB connection string
+# Edit .env with your PostgreSQL connection string
+npm run database:setup  # Set up Prisma schema
 npm run dev
 ```
 
@@ -73,7 +114,7 @@ curl "http://localhost:7769/api/v1/media/extract?url=https://example.com"
 
 - **Runtime**: Node.js with ES modules
 - **Framework**: Express.js with TypeScript
-- **Database**: MongoDB with Mongoose ODM
+- **Database**: PostgreSQL with Prisma ORM
 - **Testing**: Node.js built-in test runner with Supertest
 - **Build System**: TypeScript compilation, TailwindCSS processing
 - **Code Quality**: ESLint, Prettier, package linting
@@ -99,27 +140,6 @@ GET    /ping                      # Simple service status
 
 ## Getting Started
 
-### Environment Configuration
-
-Create a `.env` file with the following variables:
-
-```bash
-# Server Configuration
-PORT=7769
-BASE_URL=http://localhost:7769
-NODE_ENV=development
-
-# Database Configuration
-MONGO_URL=mongodb://localhost:27017/watchthis-media
-
-# Service URLs
-USER_SERVICE_URL=http://localhost:8583
-HOME_SERVICE_URL=http://localhost:7279
-
-# API Keys (for metadata extraction)
-YOUTUBE_API_KEY=your_youtube_api_key_here
-```
-
 ### Installation
 
 ```bash
@@ -138,6 +158,10 @@ npm run build
 # Run tests
 npm run test
 
+# Database management
+npm run database:setup         # Set up database schema
+npm run database:test:setup    # Set up test database schema
+
 # Lint and format code
 npm run lint
 npm run format
@@ -155,31 +179,48 @@ npm run start
 
 Visit http://localhost:7769 for the service dashboard.
 
-## Database Schema
+## Troubleshooting
 
-### Media Collection
+### Database Connection Issues
 
-```javascript
-{
-  _id: ObjectId,
-  url: String,                    // Original media URL
-  platform: String,              // 'youtube', 'spotify', 'article', etc.
-  metadata: {
-    title: String,
-    description: String,
-    thumbnail: String,
-    duration: Number,             // in seconds
-    author: String,
-    publishedAt: Date,
-    tags: [String]
-  },
-  extractionStatus: String,       // 'pending', 'completed', 'failed'
-  extractionError: String,        // Error message if extraction fails
-  extractedAt: Date,              // When metadata was extracted
-  createdAt: Date,                // When item was added to repository
-  updatedAt: Date                 // Last metadata update (automated only)
-}
-```
+1. **PostgreSQL not running**:
+
+   ```bash
+   # Check if PostgreSQL is running
+   pg_isready -h localhost -p 5432
+
+   # Start PostgreSQL service
+   # macOS: brew services start postgresql
+   # Linux: sudo systemctl start postgresql
+   ```
+
+2. **Authentication failed**:
+
+   ```bash
+   # Check if user exists and has correct permissions
+   psql -U postgres -c "SELECT rolname FROM pg_roles WHERE rolname = 'watchthis';"
+
+   # Reset user password if needed
+   psql -U postgres -c "ALTER USER watchthis PASSWORD 'watchthis_dev';"
+   ```
+
+3. **Database doesn't exist**:
+
+   ```bash
+   # Create databases if they don't exist
+   psql -U postgres -c "CREATE DATABASE watchthis_media OWNER watchthis;"
+   psql -U postgres -c "CREATE DATABASE watchthis_media_test OWNER watchthis;"
+   ```
+
+4. **Prisma client errors**:
+
+   ```bash
+   # Regenerate Prisma client
+   npx prisma generate
+
+   # Reset database schema
+   npm run database:setup
+   ```
 
 ## Supported Platforms
 
