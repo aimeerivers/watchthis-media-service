@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/aimeerivers/watchthis-media-service/compare/v3.0.0...v4.0.0) (2025-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* Media Service now uses PostgreSQL instead of MongoDB. Please check and update accordingly.
+
+### Features
+
+* Switch to using PostgreSQL ([#32](https://github.com/aimeerivers/watchthis-media-service/issues/32)) ([3dc4a10](https://github.com/aimeerivers/watchthis-media-service/commit/3dc4a104732fa30872ad35a7ff90396e1a2a7a70))
+
 ## [3.0.0](https://github.com/aimeerivers/watchthis-media-service/compare/v2.0.0...v3.0.0) (2025-10-12)
 
 
