@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/aimeerivers/watchthis-media-service/compare/v4.0.0...v4.0.1) (2025-10-20)
+
+
+### Chores
+
+* Update dependencies ([#35](https://github.com/aimeerivers/watchthis-media-service/issues/35)) ([325fc41](https://github.com/aimeerivers/watchthis-media-service/commit/325fc41468e5ca7334fd590a37147db9d4b62ef8))
+
 ## [4.0.0](https://github.com/aimeerivers/watchthis-media-service/compare/v3.0.0...v4.0.0) (2025-10-14)
 
 
